@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#150f11"
+    android:orientation="vertical">
+
+    <include layout="@layout/nav_header_main" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <RadioButton
+            android:id="@+id/rb_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:checked="true"
+            android:drawableLeft="@drawable/selector_home"
+            android:drawablePadding="15dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="首页"
+            android:textColor="@color/selector_text_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@drawable/divider_bg" />
+
+        <RadioButton
+            android:id="@+id/rb_tj"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_tj"
+            android:drawablePadding="15dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="推荐"
+            android:textColor="@color/selector_text_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@drawable/divider_bg" />
+
+        <RadioButton
+            android:id="@+id/rb_gd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_gd"
+            android:drawablePadding="15dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="歌单"
+            android:textColor="@color/selector_text_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@drawable/divider_bg" />
+
+        <RadioButton
+            android:id="@+id/rb_dt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_dt"
+            android:drawablePadding="15dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="电台"
+            android:textColor="@color/selector_text_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@drawable/divider_bg" />
+
+        <RadioButton
+            android:id="@+id/rb_ph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_ph"
+            android:drawablePadding="15dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="排行"
+            android:textColor="@color/selector_text_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@drawable/divider_bg" />
+
+        <RadioButton
+            android:id="@+id/rb_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_msg"
+            android:drawablePadding="15dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="消息"
+            android:textColor="@color/selector_text_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@drawable/divider_bg" />
+
+        <RadioButton
+            android:id="@+id/rb_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_setting"
+            android:drawablePadding="15dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="设置"
+            android:textColor="@color/selector_text_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@drawable/divider_bg" />
+
+        <RadioButton
+            android:id="@+id/rb_about"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableLeft="@drawable/selector_about"
+            android:drawablePadding="15dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            android:text="关于"
+            android:textColor="@color/selector_text_color" />
+    </RadioGroup>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="100dp" />
+</LinearLayout>
