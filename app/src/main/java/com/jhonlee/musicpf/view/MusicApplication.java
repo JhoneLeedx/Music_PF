@@ -11,10 +11,21 @@ import com.jhonlee.musicpf.service.MusicService;
 
 public class MusicApplication extends Application {
 
+    private Intent serviceIntent;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        Intent intent = new Intent(getApplicationContext(),MusicService.class);
-        startService(intent);
+        serviceIntent = new Intent(getApplicationContext(),MusicService.class);
+        startService(serviceIntent);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        if (serviceIntent!=null){
+            stopService(serviceIntent);
+            serviceIntent = null;
+        }
     }
 }

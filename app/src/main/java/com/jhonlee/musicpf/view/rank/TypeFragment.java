@@ -45,6 +45,8 @@ public class TypeFragment extends Fragment implements RankContract.View,MusicLis
     private RankContract.Presenter presenter;
     private RankRecyclerAdapter adapter;
     private List<Rank.SongsBean> mList;
+
+    private ArrayList<Integer> integerList = new ArrayList<>();
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -94,6 +96,11 @@ public class TypeFragment extends Fragment implements RankContract.View,MusicLis
         mList.clear();
         mList.addAll(list);
         adapter.notifyDataSetChanged();
+
+        integerList.clear();
+        for (Rank.SongsBean bean : list){
+            integerList.add(bean.getId());
+        }
     }
 
     @Override
@@ -115,6 +122,10 @@ public class TypeFragment extends Fragment implements RankContract.View,MusicLis
     public void showSong(int id) {
         Intent intent = new Intent(getContext(),MusicActivity.class);
         intent.putExtra("id",id);
+        if (integerList.size()>0){
+            intent.putIntegerArrayListExtra("integerList",integerList);
+        }
         startActivity(intent);
     }
+
 }

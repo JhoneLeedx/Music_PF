@@ -79,12 +79,15 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
     ImageView ivPlayPause;
 
     private int mId;
-    private int ztIndex = 0;
+    private int playType = Const.STATE_SHUNXU;
     private boolean isplaying;
     private TrackToken.SongsBean mSong;
     private List<Lyric> mList;
     private List<View> views;
     private LrcView lrcView;
+    private ImageView alumView;
+    private ArrayList<Integer> integers ;
+
 
     private TrackContract.Presenter presenter;
     private LyricContract.Presenter lyricpresenter;
@@ -127,20 +130,32 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
 
     private void initData() {
 
+        mList = new ArrayList<>();
+
+        integers =getIntent().getIntegerArrayListExtra("integerList");
+        Intent intent = new Intent();
+        intent.setAction(Const.SERVICE_ACTION);
+        intent.putExtra(Const.MUSIC_STATE,Const.STATE_ALLID);
+        intent.putExtra("integers",integers);
+        sendBroadcast(intent);
+
+
         mId = getIntent().getIntExtra("id", 0);
         presenter = new TrackPrestenter();
         presenter.attachView(this);
-        String ids = new StringBuilder().append("[").append(mId).append("]").toString();
-        presenter.loadAboutTrack(mId, ids);
 
         lyricpresenter = new LyricPrestenter();
         lyricpresenter.attachView(this);
-        lyricpresenter.loadLyric(mId);
-
         views = new ArrayList<>();
+        alumView = new ImageView(MusicActivity.this);
+        views.add(alumView);
+
+        lrcView = new LrcView(MusicActivity.this);
+        views.add(lrcView);
 
         yklbAdapter = new YKLBAdapter(views);
         musicPager.setAdapter(yklbAdapter);
+        loadSongAndLrc(mId);
     }
 
     @Override
@@ -164,7 +179,9 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
         switch (view.getId()) {
 
             case R.id.iv_bf_zt:
-                getZtindex(intent);
+                getNextPlayType();
+                intent.putExtra(Const.MUSIC_STATE,playType);
+                sendBroadcast(intent);
                 break;
             case R.id.iv_previous:
                 intent.putExtra(Const.MUSIC_STATE, Const.STATE_PREVIOUS);
@@ -180,6 +197,7 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
                // handler.sendEmptyMessage(0);
                 break;
             case R.id.iv_next:
+
                 intent.putExtra(Const.MUSIC_STATE, Const.STATE_NEXT);
                 sendBroadcast(intent);
                 break;
@@ -188,45 +206,59 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
         }
     }
 
-    private void getZtindex(Intent intent) {
+    private void getPlayType() {
 
-        switch (ztIndex) {
+        switch (playType) {
             case Const.STATE_SHUNXU:
                 ivBfZt.setImageResource(R.drawable.shunxu);
-                intent.putExtra(Const.MUSIC_STATE, Const.STATE_SHUNXU);
-                sendBroadcast(intent);
                 break;
             case Const.STATE_XUNHUAN:
                 ivBfZt.setImageResource(R.drawable.xunhuan);
-                intent.putExtra(Const.MUSIC_STATE, Const.STATE_XUNHUAN);
-                sendBroadcast(intent);
                 break;
             case Const.STATE_DANQU:
                 ivBfZt.setImageResource(R.drawable.danqu);
-                intent.putExtra(Const.MUSIC_STATE, Const.STATE_DANQU);
-                sendBroadcast(intent);
                 break;
             case Const.STATE_SUIJI:
                 ivBfZt.setImageResource(R.drawable.suiji);
-                intent.putExtra(Const.MUSIC_STATE, Const.STATE_SUIJI);
-                sendBroadcast(intent);
                 break;
         }
 
     }
-
+    private void getNextPlayType(){
+        switch (playType) {
+            case Const.STATE_SHUNXU:
+                playType =Const.STATE_XUNHUAN;
+                break;
+            case Const.STATE_XUNHUAN:
+                playType =Const.STATE_DANQU;
+                break;
+            case Const.STATE_DANQU:
+                playType =Const.STATE_SUIJI;
+                break;
+            case Const.STATE_SUIJI:
+                playType =Const.STATE_SHUNXU;
+                break;
+        }
+    }
     @Override
     public void loadAboutTrack(TrackToken.SongsBean song) {
+
+        Intent intent = new Intent();
+        intent.setAction(Const.SERVICE_ACTION);
+        intent.putExtra(Const.MUSIC_STATE,Const.STATE_PLAY);
+        intent.putExtra("song",song);
+        sendBroadcast(intent);
+        mSong = song;
         Message msg = new Message();
         msg.obj = song;
-        songHandler.sendMessage(msg);
+        songHandler.sendEmptyMessage(0);
+
     }
 
     @Override
     public void dismisProgress() {
 
     }
-
     @Override
     public void showProgress() {
 
@@ -234,95 +266,73 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
 
     @Override
     public void loadLyric(List<Lyric> list) {
-        Message msg = new Message();
-        msg.obj = list;
-        lrcHandler.sendMessage(msg);
+        mList.clear();
+        mList.addAll(list);
+        songHandler.sendEmptyMessage(1);
+
     }
 
     @Override
     public void showError(String error) {
 
     }
+    private void loadSongAndLrc(int id){
 
+        String ids = new StringBuilder().append("[").append(id).append("]").toString();
+        presenter.loadAboutTrack(id, ids);
+        lyricpresenter.loadLyric(id);
+    }
     private Handler songHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            mSong = (TrackToken.SongsBean) msg.obj;
-            if (mSong != null) {
-                tvAuthor.setText(mSong.getArtists().get(0).getName());
-                tvTitle.setText(mSong.getName());
-                seekbar.setMax(mSong.getDuration());
-                tvAllTime.setText(TimeUtil.formatTime(mSong.getDuration()));
-                Glide.with(MusicActivity.this).load(mSong.getAlbum().getPicUrl())
-                        .asBitmap().into(new SimpleTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        musicPager.setBackground(new BitmapDrawable(FastBlurUtil.toBlur(resource, 10)));
+            if (msg.what == 0){
 
-                    }
-                });
+                if (mSong != null) {
+                    tvAuthor.setText(mSong.getArtists().get(0).getName());
+                    tvTitle.setText(mSong.getName());
+                   // seekbar.setMax(mSong.getDuration());
+                    tvAllTime.setText(TimeUtil.formatTime(mSong.getDuration()));
+                    Glide.with(MusicActivity.this).load(mSong.getAlbum().getPicUrl())
+                            .asBitmap().into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            musicPager.setBackground(new BitmapDrawable(FastBlurUtil.toBlur(resource, 10)));
+                        }
+                    });
+                    Glide.with(MusicActivity.this)
+                            .load(mSong.getAlbum().getPicUrl())
+                            .animate(AnimationUtils.loadAnimation(MusicActivity.this, R.anim.img_anim))
+                            .bitmapTransform(new CropCircleTransformation(MusicActivity.this))
+                            .into(alumView);
+                }
+            }else if (msg.what == 1){
+                if (mList.size()>0){
+                    lrcView.setmList(mList);
+                }else {
+                    lrcView.setmList(null);
+                }
 
-                Intent intent = new Intent();
-                intent.setAction(Const.SERVICE_ACTION);
-                intent.putExtra(Const.MUSIC_STATE,Const.STATE_PLAY);
-                intent.putExtra("song",mSong);
-                sendBroadcast(intent);
             }
         }
     };
 
-    private Handler lrcHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            mList = (List<Lyric>) msg.obj;
-          //  handler.sendEmptyMessage(0);
-        }
-    };
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == 0) {
+
                 if (isplaying){
                     Glide.with(MusicActivity.this).load(R.drawable.pause_64).into(ivPlayPause);
                 }else {
                     Glide.with(MusicActivity.this).load(R.drawable.play_64).into(ivPlayPause);
                 }
-                views.clear();
-                if (mSong != null && mList != null && mList.size() > 0) {
-                    ImageView imageView = new ImageView(MusicActivity.this);
-                    Glide.with(MusicActivity.this)
-                            .load(mSong.getAlbum().getPicUrl())
-                            .animate(AnimationUtils.loadAnimation(MusicActivity.this, R.anim.img_anim))
-                            .bitmapTransform(new CropCircleTransformation(MusicActivity.this))
-                            .into(imageView);
-                    views.add(imageView);
-                    if (lrcView != null) {
-                        lrcView = null;
-                    }
-                    lrcView = new LrcView(MusicActivity.this, mList);
-                    views.add(lrcView);
-                    yklbAdapter.notifyDataSetChanged();
-                } else if (mSong != null && (mList == null || mList.size() == 0)) {
-                    ImageView imageView = new ImageView(MusicActivity.this);
-                    Glide.with(MusicActivity.this)
-                            .load(mSong.getAlbum().getPicUrl())
-                            .animate(AnimationUtils.loadAnimation(MusicActivity.this, R.anim.img_anim))
-                            .bitmapTransform(new CropCircleTransformation(MusicActivity.this))
-                            .into(imageView);
-                    views.add(imageView);
-                    TextView textView = new TextView(MusicActivity.this);
-                    textView.setWidth(ViewPager.LayoutParams.MATCH_PARENT);
-                    textView.setHeight(ViewPager.LayoutParams.MATCH_PARENT);
-                    textView.setText("目前暂无歌词....");
-                    textView.setTextColor(Color.WHITE);
-                    textView.setTextSize(32f);
-                    textView.setGravity(Gravity.CENTER);
-                    views.add(textView);
-                    yklbAdapter.notifyDataSetChanged();
-                }
+            }else if (msg.what ==1){
+                getPlayType();
+            }else if (msg.what ==3){
+                seekbar.setProgress(0);
+                lrcView.refreshLcy();
             }
         }
     };
@@ -355,15 +365,14 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
             int state = intent.getIntExtra(Const.MUSIC_STATE,0);
             switch (state){
                 case Const.STATE_NEXT:
+                    mId = intent.getIntExtra("id",0);
+                    loadSongAndLrc(mId);
                     break;
                 case Const.STATE_NON:
                     break;
-                case Const.STATE_PAUSE:
-                    isplaying = intent.getBooleanExtra("isplay",false);
-                    handler.sendEmptyMessage(0);
-                    break;
                 case Const.STATE_PLAY:
                     isplaying = intent.getBooleanExtra("isplay",false);
+                    seekbar.setMax(intent.getIntExtra("alltime",0));
                     handler.sendEmptyMessage(0);
                     break;
                 case Const.STATE_PREVIOUS:
@@ -372,19 +381,17 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
                    int currentTime =  intent.getIntExtra("currentTime",0);
                     seekbar.setProgress(currentTime);
                     tvCurrentTime.setText(TimeUtil.formatTime(currentTime));
-                    if (lrcView!=null){
-                        lrcView.updateTime(currentTime);
+                    if (lrcView.getmList()!=null){
+                        if (currentTime==seekbar.getMax()){
+                            lrcView.refreshLcy();
+                        }else {
+                            lrcView.updateTime(currentTime);
+                        }
                     }
                     break;
-                case Const.STATE_DANQU:
-                    break;
-                case Const.STATE_SHUNXU:
-                    break;
-                case Const.STATE_SUIJI:
-                    break;
-                case Const.STATE_XUNHUAN:
-                    break;
-                case Const.STATE_STOP:
+                case Const.STATE_PLAY_TYPE:
+                    playType = intent.getIntExtra("playType",0);
+                    handler.sendEmptyMessage(1);
                     break;
             }
 

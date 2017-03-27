@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 
 import com.jhonlee.musicpf.R;
@@ -37,18 +38,28 @@ public class LrcView extends View {
     private WeakReference<LrcView> lrcViewRef;
     private  LrcHandler mHandler;
 
-    public LrcView(Context context, List<Lyric> mList) {
+    public LrcView(Context context) {
        /* super(context);
         init(mList);*/
-        this(context,null,mList);
+        this(context,null);
     }
 
-    public LrcView(Context context, AttributeSet attrs, List<Lyric> mList) {
+    public LrcView(Context context, AttributeSet attrs) {
         super(context,attrs);
-        init(mList);
+        init();
+    }
+    public void setmList(List<Lyric> mList){
+        this.mList = mList;
     }
 
-    private void init(List<Lyric> mList){
+    public List<Lyric> getmList() {
+        return mList;
+    }
+
+    public void clearList(){
+        mList = null;
+    }
+    private void init(){
 
         lrcViewRef = new WeakReference<LrcView>(this);
         mHandler = new LrcHandler(lrcViewRef);
@@ -69,7 +80,7 @@ public class LrcView extends View {
         mCurrentPaint = new Paint();
         mCurrentPaint.setColor(Color.GREEN);
         mCurrentPaint.setTextSize(mTextSize);
-        this.mList = mList;
+
         //得到网络歌词
     }
 
@@ -77,35 +88,34 @@ public class LrcView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mList==null) {
-            canvas.drawText("当前暂无歌词", getHeight() / 2, getWidth() / 2, mNomalPaint);
-            return;
+            canvas.drawText("当前暂无歌词", getWidth()/2,getHeight()/2,mNomalPaint);
+        }else {
+            float centerY = getHeight() / 2 + mTextSize / 2 + mAnimOffset;
+
+            String currentStr = mList.get(mCurrentLine).getLyric();
+
+            float currX = (getWidth() - mCurrentPaint.measureText(currentStr)) / 2;
+
+            canvas.drawText(currentStr, currX, centerY, mCurrentPaint);
+
+            // 画当前行上面的
+            for (int i = mCurrentLine - 1; i >= 0; i--) {
+                String upStr = mList.get(i).getLyric();
+                float upX = (getWidth() - mNomalPaint.measureText(upStr)) / 2;
+                float upY = centerY - (mTextSize + mDividerHeight)
+                        * (mCurrentLine - i);
+                canvas.drawText(upStr, upX, upY, mNomalPaint);
+            }
+
+            // 画当前行下面的
+            for (int i = mCurrentLine + 1; i < mList.size(); i++) {
+                String downStr = mList.get(i).getLyric();
+                float downX = (getWidth() - mNomalPaint.measureText(downStr)) / 2;
+                float downY = centerY + (mTextSize + mDividerHeight)
+                        * (i - mCurrentLine);
+                canvas.drawText(downStr, downX, downY, mNomalPaint);
+            }
         }
-        float centerY = getHeight()/2+mTextSize/2+mAnimOffset;
-
-        String currentStr = mList.get(mCurrentLine).getLyric();
-
-        float currX = (getWidth() - mCurrentPaint.measureText(currentStr)) / 2;
-
-        canvas.drawText(currentStr, currX, centerY, mCurrentPaint);
-
-        // 画当前行上面的
-        for (int i = mCurrentLine - 1; i >= 0; i--) {
-            String upStr = mList.get(i).getLyric();
-            float upX = (getWidth() - mNomalPaint.measureText(upStr)) / 2;
-            float upY = centerY - (mTextSize + mDividerHeight)
-                    * (mCurrentLine - i);
-            canvas.drawText(upStr, upX, upY, mNomalPaint);
-        }
-
-        // 画当前行下面的
-        for (int i = mCurrentLine + 1; i < mList.size(); i++) {
-            String downStr = mList.get(i).getLyric();
-            float downX = (getWidth() - mNomalPaint.measureText(downStr)) / 2;
-            float downY = centerY + (mTextSize + mDividerHeight)
-                    * (i - mCurrentLine);
-            canvas.drawText(downStr, downX, downY, mNomalPaint);
-        }
-
     }
 
     /**

@@ -29,6 +29,13 @@ public class Const {
     public static final int STATE_XUNHUAN = 9;
     //随机播放
     public static final int STATE_DANQU = 10;
+
+    //列表总数
+    public static final int STATE_ALLID = 11;
+
+    //列表总数
+    public static final int STATE_PLAY_TYPE = 12;
+
     //action 携带的state
     public static final String MUSIC_STATE = "state";
     //action 名字

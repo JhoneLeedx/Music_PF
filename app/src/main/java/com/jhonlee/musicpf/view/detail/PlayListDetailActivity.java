@@ -50,6 +50,8 @@ public class PlayListDetailActivity extends AppCompatActivity implements SongCon
     private String mImgUrl;
     private String mName;
 
+    private ArrayList<Integer> integerList = new ArrayList<>();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +94,10 @@ public class PlayListDetailActivity extends AppCompatActivity implements SongCon
         lists.clear();
         lists.addAll(list);
         adapter.notifyDataSetChanged();
+        integerList.clear();
+        for (Song.TracksBean bean : list){
+            integerList.add(bean.getId());
+        }
     }
 
     @Override
@@ -113,6 +119,9 @@ public class PlayListDetailActivity extends AppCompatActivity implements SongCon
     public void showSong(int id) {
         Intent intent = new Intent(this,MusicActivity.class);
         intent.putExtra("id",id);
+        if (integerList.size()>0){
+            intent.putIntegerArrayListExtra("integerList",integerList);
+        }
         startActivity(intent);
     }
 }
