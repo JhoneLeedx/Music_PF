@@ -82,7 +82,7 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
     private int playType = Const.STATE_SHUNXU;
     private boolean isplaying;
     private TrackToken.SongsBean mSong;
-    private List<Lyric> mList;
+
     private List<View> views;
     private LrcView lrcView;
     private ImageView alumView;
@@ -130,7 +130,6 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
 
     private void initData() {
 
-        mList = new ArrayList<>();
 
         integers =getIntent().getIntegerArrayListExtra("integerList");
         Intent intent = new Intent();
@@ -248,6 +247,7 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
         intent.putExtra(Const.MUSIC_STATE,Const.STATE_PLAY);
         intent.putExtra("song",song);
         sendBroadcast(intent);
+
         mSong = song;
         Message msg = new Message();
         msg.obj = song;
@@ -266,10 +266,10 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
 
     @Override
     public void loadLyric(List<Lyric> list) {
-        mList.clear();
-        mList.addAll(list);
-        songHandler.sendEmptyMessage(1);
-
+        if (list.size()>0){
+            lrcView.setmList(list);
+            lrcView.invalidate();
+        }
     }
 
     @Override
@@ -306,13 +306,6 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
                             .bitmapTransform(new CropCircleTransformation(MusicActivity.this))
                             .into(alumView);
                 }
-            }else if (msg.what == 1){
-                if (mList.size()>0){
-                    lrcView.setmList(mList);
-                }else {
-                    lrcView.setmList(null);
-                }
-
             }
         }
     };
@@ -340,6 +333,10 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (fromUser){
+            if (lrcView.getmList()!=null){
+                lrcView.refreshLcy();
+                lrcView.updateTime(progress);
+            }
             Intent intent = new Intent();
             intent.setAction(Const.SERVICE_ACTION);
             intent.putExtra(Const.MUSIC_STATE,Const.STATE_SEEK);
@@ -355,7 +352,9 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
+        if (lrcView.getmList()!=null){
+            lrcView.refreshLcy();
+        }
     }
 
     private class MusicReceiver extends BroadcastReceiver {
@@ -365,6 +364,10 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
             int state = intent.getIntExtra(Const.MUSIC_STATE,0);
             switch (state){
                 case Const.STATE_NEXT:
+                    if (lrcView.getmList()!=null){
+                        lrcView.refreshLcy();
+                        lrcView.clearList();
+                    }
                     mId = intent.getIntExtra("id",0);
                     loadSongAndLrc(mId);
                     break;

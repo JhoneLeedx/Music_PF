@@ -79,11 +79,7 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
                     getRadomIndex(integers);
                     break;
             }
-            Intent intent = new Intent(Const.MUSIC_ACTION);
-            intent.putExtra(Const.MUSIC_STATE,Const.STATE_NEXT);
-            int id = integers.get(currentIndex);
-            intent.putExtra("id",id);
-            sendBroadcast(intent);
+           nextMusic();
         }
     }
 
@@ -109,47 +105,23 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
         @Override
         public void onReceive(Context context, Intent intent) {
             int state = intent.getIntExtra(Const.MUSIC_STATE,0);
-            if (playType == Const.STATE_SHUNXU){
+
                 switch (state){
                     case Const.STATE_NEXT:
-                        Intent intents = new Intent(Const.MUSIC_ACTION);
-                        intents.putExtra(Const.MUSIC_STATE,Const.STATE_NEXT);
-                        if (integers!=null){
-
-
-                            getShunxu(integers);
-                            int  id = integers.get(currentIndex);
-                            intents.putExtra("id",id);
-                            sendBroadcast(intent);
-                            return;
-                        }
-
-
-
-                      /*  switch (playType){
+                        switch (playType){
                             case Const.STATE_SHUNXU:
-
+                                getShunxu(integers);
                                 break;
                             case Const.STATE_DANQU:
-                                 id = integers.get(currentIndex);
-                                intents.putExtra("id",id);
-                                sendBroadcast(intent);
                                 break;
                             case Const.STATE_XUNHUAN:
                                 getXunhuan(integers);
-                                id = integers.get(currentIndex);
-                                intents.putExtra("id",id);
-                                sendBroadcast(intent);
                                 break;
                             case Const.STATE_SUIJI:
                                 getRadomIndex(integers);
-                                id = integers.get(currentIndex);
-                                intents.putExtra("id",id);
-                                sendBroadcast(intent);
                                 break;
                         }
-
-                    }*/
+                        nextMusic();
                         break;
                     case Const.STATE_NON:
                         break;
@@ -176,6 +148,8 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
 
                         break;
                     case Const.STATE_PREVIOUS:
+
+
                         break;
                     case Const.STATE_SEEK:
                         int progress = intent.getIntExtra("progress",0);
@@ -208,7 +182,6 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
                 }
             }
 
-        }
     }
 
     // 音乐播放
@@ -309,7 +282,6 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
                 currentIndex--;
              //   stop();
             }
-            return;
         }
     }
     private void sendPlayType(){
@@ -317,5 +289,12 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
         intent.putExtra(Const.MUSIC_STATE,Const.STATE_PLAY_TYPE);
         intent.putExtra("playType",playType);
         sendBroadcast(intent);
+    }
+    private void nextMusic(){
+        Intent intents = new Intent(Const.MUSIC_ACTION);
+        intents.putExtra(Const.MUSIC_STATE,Const.STATE_NEXT);
+        int id = integers.get(currentIndex);
+        intents.putExtra("id",id);
+        sendBroadcast(intents);
     }
 }

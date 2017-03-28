@@ -15,18 +15,23 @@ public class MusicUtil {
 
     public static List<Lyric> getLyrics(String lyric){
 
-        List<Lyric> lyrics = new ArrayList<>();
 
+        List<Lyric> lyrics = new ArrayList<>();
         String lyricy = lyric.replace("\n", "");
         if (lyricy!=null){
             String[] strings = lyricy.trim().split("\\[");
             for (int i=0;i<strings.length;i++){
                 int index = strings[i].indexOf("]");
                 if(index!=-1){
-                    Lyric lyc = new Lyric(Parcel.obtain());
-                    lyc.setLyric(strings[i].substring(index+1).trim());
-                    lyc.setTime(lrcData(strings[i].substring(0,index).trim()));
-                    lyrics.add(lyc);
+                    if (strings[i].substring(0,index).trim().startsWith("ti:")){
+                    }else if (strings[i].substring(0,index).trim().startsWith("ar:")){
+                    }else if (strings[i].substring(0,index).trim().startsWith("al:")){
+                    }else {
+                        Lyric lyc = new Lyric(Parcel.obtain());
+                        lyc.setLyric(strings[i].substring(index+1).trim());
+                        lyc.setTime(lrcData(strings[i].substring(0,index).trim()));
+                        lyrics.add(lyc);
+                    }
                 }
             }
         }
