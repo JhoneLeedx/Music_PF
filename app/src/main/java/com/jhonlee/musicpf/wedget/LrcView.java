@@ -88,7 +88,8 @@ public class LrcView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mList==null) {
-            canvas.drawText("当前暂无歌词", getWidth()/2,getHeight()/2,mNomalPaint);
+            String str = "当前暂无歌词";
+            canvas.drawText(str, (getWidth()-mNomalPaint.measureText(str))/2,getHeight()/2,mNomalPaint);
         }else {
             float centerY = getHeight() / 2 + mTextSize / 2 + mAnimOffset;
 

@@ -37,6 +37,7 @@ import com.jhonlee.musicpf.pojo.TrackToken;
 import com.jhonlee.musicpf.util.Const;
 import com.jhonlee.musicpf.util.FastBlurUtil;
 import com.jhonlee.musicpf.util.MusicUtil;
+import com.jhonlee.musicpf.util.SharedPerencesUtil;
 import com.jhonlee.musicpf.util.TimeUtil;
 import com.jhonlee.musicpf.view.yueku.YKLBAdapter;
 import com.jhonlee.musicpf.wedget.LrcView;
@@ -79,7 +80,7 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
     ImageView ivPlayPause;
 
     private int mId;
-    private int playType = Const.STATE_SHUNXU;
+    private int playType;
     private boolean isplaying;
     private TrackToken.SongsBean mSong;
 
@@ -108,6 +109,9 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
         filter.addAction(Const.MUSIC_ACTION);
         registerReceiver(receiver,filter);
 
+        playType = SharedPerencesUtil.getPlayTpye(this);
+        getPlayType();
+
         seekbar.setOnSeekBarChangeListener(this);
     }
 
@@ -124,12 +128,9 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
         {
             unregisterReceiver(receiver);
         }
-
-
     }
 
     private void initData() {
-
 
         integers =getIntent().getIntegerArrayListExtra("integerList");
         Intent intent = new Intent();
@@ -371,14 +372,10 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
                     mId = intent.getIntExtra("id",0);
                     loadSongAndLrc(mId);
                     break;
-                case Const.STATE_NON:
-                    break;
                 case Const.STATE_PLAY:
                     isplaying = intent.getBooleanExtra("isplay",false);
                     seekbar.setMax(intent.getIntExtra("alltime",0));
                     handler.sendEmptyMessage(0);
-                    break;
-                case Const.STATE_PREVIOUS:
                     break;
                 case Const.STATE_SEEK:
                    int currentTime =  intent.getIntExtra("currentTime",0);

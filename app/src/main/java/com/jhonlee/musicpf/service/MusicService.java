@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.jhonlee.musicpf.pojo.TrackToken;
 import com.jhonlee.musicpf.util.Const;
+import com.jhonlee.musicpf.util.SharedPerencesUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,8 +34,8 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
     private TrackToken.SongsBean mSong;
     private ArrayList<Integer> integers;
     private int currentIndex;
-    private int playType = Const.STATE_SHUNXU;
-
+    private int playType;
+    private boolean isNext;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -52,7 +53,7 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
         registerReceiver(receiver,filter);
         player.setOnCompletionListener(this);
         player.setOnErrorListener(this);
-
+        playType = SharedPerencesUtil.getPlayTpye(this);
     }
     @Override
     public void onDestroy() {
@@ -64,7 +65,7 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-
+        isNext = true;
         if (integers!=null){
             switch (playType){
                 case Const.STATE_SHUNXU:
@@ -79,7 +80,7 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
                     getRadomIndex(integers);
                     break;
             }
-           nextMusic();
+            preouseNextMusic();
         }
     }
 
@@ -108,6 +109,7 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
 
                 switch (state){
                     case Const.STATE_NEXT:
+                        isNext = true;
                         switch (playType){
                             case Const.STATE_SHUNXU:
                                 getShunxu(integers);
@@ -121,7 +123,7 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
                                 getRadomIndex(integers);
                                 break;
                         }
-                        nextMusic();
+                        preouseNextMusic();
                         break;
                     case Const.STATE_NON:
                         break;
@@ -148,8 +150,22 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
 
                         break;
                     case Const.STATE_PREVIOUS:
+                        isNext = false;
 
-
+                        switch (playType){
+                            case Const.STATE_SHUNXU:
+                                getShunxu(integers);
+                                break;
+                            case Const.STATE_DANQU:
+                                break;
+                            case Const.STATE_XUNHUAN:
+                                getXunhuan(integers);
+                                break;
+                            case Const.STATE_SUIJI:
+                                getRadomIndex(integers);
+                                break;
+                        }
+                        preouseNextMusic();
                         break;
                     case Const.STATE_SEEK:
                         int progress = intent.getIntExtra("progress",0);
@@ -268,29 +284,47 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
 
     private void getXunhuan(List<Integer> integers){
         if (integers.size()>0){
-            currentIndex++;
-            if (currentIndex==integers.size()){
-                currentIndex = 0 ;
+            if (isNext){
+                currentIndex++;
+                if (currentIndex==integers.size()){
+                    currentIndex = 0 ;
+                }
+            }else {
+                if (currentIndex==0){
+                    currentIndex = integers.size()-1;
+                }else {
+                    currentIndex--;
+                }
             }
-        }
 
+        }
     }
     private void getShunxu(List<Integer> integers){
         if (integers.size()>0){
-            currentIndex++;
-            if (currentIndex==integers.size()){
-                currentIndex--;
-             //   stop();
+            if (isNext){
+                currentIndex++;
+                if (currentIndex==integers.size()){
+                    currentIndex--;
+                    //   stop();
+                }
+            }else {
+                if (currentIndex==0){
+
+                }else {
+                    currentIndex--;
+                }
             }
+
         }
     }
     private void sendPlayType(){
+        SharedPerencesUtil.setPlayTpye(this,playType);
         Intent intent = new Intent(Const.MUSIC_ACTION);
         intent.putExtra(Const.MUSIC_STATE,Const.STATE_PLAY_TYPE);
         intent.putExtra("playType",playType);
         sendBroadcast(intent);
     }
-    private void nextMusic(){
+    private void preouseNextMusic(){
         Intent intents = new Intent(Const.MUSIC_ACTION);
         intents.putExtra(Const.MUSIC_STATE,Const.STATE_NEXT);
         int id = integers.get(currentIndex);
