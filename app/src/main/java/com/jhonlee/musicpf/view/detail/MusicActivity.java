@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,15 +15,18 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -36,7 +40,6 @@ import com.jhonlee.musicpf.pojo.Lyric;
 import com.jhonlee.musicpf.pojo.TrackToken;
 import com.jhonlee.musicpf.util.Const;
 import com.jhonlee.musicpf.util.FastBlurUtil;
-import com.jhonlee.musicpf.util.MusicUtil;
 import com.jhonlee.musicpf.util.SharedPerencesUtil;
 import com.jhonlee.musicpf.util.TimeUtil;
 import com.jhonlee.musicpf.view.yueku.YKLBAdapter;
@@ -78,7 +81,8 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
     ImageView ivBfZt;
     @BindView(R.id.iv_play_pause)
     ImageView ivPlayPause;
-
+    @BindView(R.id.iv_all)
+    ImageView ivAll;
     private int mId;
     private int playType;
     private boolean isplaying;
@@ -166,8 +170,12 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home)
+        if (item.getItemId() == android.R.id.home) {
             finish();
+        }else if (item.getItemId()==R.id.item_detail){
+
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -202,10 +210,35 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
                 sendBroadcast(intent);
                 break;
             case R.id.iv_all:
+                Toast.makeText(this, "iv_all", Toast.LENGTH_SHORT).show();
+                createPopup();
                 break;
         }
     }
 
+    private void createPopup(){
+        PopupWindow popupWindow = new PopupWindow(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.popup_music_view,null);
+        popupWindow.setContentView(view);
+        popupWindow.setWidth(getWindowManager().getDefaultDisplay().getWidth()/2);
+        popupWindow.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
+        // 实例化一个ColorDrawable颜色为半透明
+        ColorDrawable dw = new ColorDrawable(0000000000);
+        popupWindow.setBackgroundDrawable(dw);
+        /*
+        mPopupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
+        // 设置SelectPicPopupWindow弹出窗体动画效果
+        this.setAnimationStyle(R.style.AnimationPreview);
+        */
+        // 使其聚集
+        popupWindow.setFocusable(true);
+        // 设置允许在外点击消失
+        popupWindow.setOutsideTouchable(true);
+        // 这个是为了点击“返回Back”也能使其消失，并且并不会影响你的背景
+        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+
+        popupWindow.showAsDropDown(ivAll);
+    }
     private void getPlayType() {
 
         switch (playType) {
