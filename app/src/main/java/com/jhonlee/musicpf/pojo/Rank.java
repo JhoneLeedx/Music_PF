@@ -1,5 +1,8 @@
 package com.jhonlee.musicpf.pojo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
@@ -33,7 +36,7 @@ public class Rank {
         this.songs = songs;
     }
 
-    public static class SongsBean {
+    public static class SongsBean implements Parcelable{
         /**
          * id : 29019227
          * name : Sugar
@@ -62,6 +65,30 @@ public class Rank {
         private Object rUrl;
         private List<ArtistsBean> artists;
         private List<?> alias;
+
+        protected SongsBean(Parcel in) {
+            id = in.readInt();
+            name = in.readString();
+            duration = in.readInt();
+            copyrightId = in.readInt();
+            status = in.readInt();
+            rtype = in.readInt();
+            ftype = in.readInt();
+            mvid = in.readInt();
+            fee = in.readInt();
+        }
+
+        public static final Creator<SongsBean> CREATOR = new Creator<SongsBean>() {
+            @Override
+            public SongsBean createFromParcel(Parcel in) {
+                return new SongsBean(in);
+            }
+
+            @Override
+            public SongsBean[] newArray(int size) {
+                return new SongsBean[size];
+            }
+        };
 
         public int getId() {
             return id;
@@ -165,6 +192,24 @@ public class Rank {
 
         public void setAlias(List<?> alias) {
             this.alias = alias;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(id);
+            dest.writeString(name);
+            dest.writeInt(duration);
+            dest.writeInt(copyrightId);
+            dest.writeInt(status);
+            dest.writeInt(rtype);
+            dest.writeInt(ftype);
+            dest.writeInt(mvid);
+            dest.writeInt(fee);
         }
 
         public static class AlbumBean {

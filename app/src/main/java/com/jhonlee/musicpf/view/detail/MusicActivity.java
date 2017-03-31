@@ -14,11 +14,16 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,11 +37,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.jhonlee.musicpf.R;
+import com.jhonlee.musicpf.listener.MusicListener;
 import com.jhonlee.musicpf.mvp.contract.LyricContract;
 import com.jhonlee.musicpf.mvp.contract.TrackContract;
 import com.jhonlee.musicpf.mvp.presenter.LyricPrestenter;
 import com.jhonlee.musicpf.mvp.presenter.TrackPrestenter;
 import com.jhonlee.musicpf.pojo.Lyric;
+import com.jhonlee.musicpf.pojo.Song;
+import com.jhonlee.musicpf.pojo.SongDetail;
 import com.jhonlee.musicpf.pojo.TrackToken;
 import com.jhonlee.musicpf.util.Const;
 import com.jhonlee.musicpf.util.FastBlurUtil;
@@ -92,12 +100,11 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
     private LrcView lrcView;
     private ImageView alumView;
     private ArrayList<Integer> integers ;
-
-
+    private ArrayList<SongDetail> songList;
     private TrackContract.Presenter presenter;
     private LyricContract.Presenter lyricpresenter;
     private YKLBAdapter yklbAdapter;
-
+    private AllMenuAdapter menuAdapter;
     private MusicReceiver receiver;
 
     @Override
@@ -137,6 +144,10 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
     private void initData() {
 
         integers =getIntent().getIntegerArrayListExtra("integerList");
+        songList =getIntent().getParcelableArrayListExtra("songList");
+
+
+
         Intent intent = new Intent();
         intent.setAction(Const.SERVICE_ACTION);
         intent.putExtra(Const.MUSIC_STATE,Const.STATE_ALLID);
@@ -173,7 +184,7 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
         if (item.getItemId() == android.R.id.home) {
             finish();
         }else if (item.getItemId()==R.id.item_detail){
-
+            Toast.makeText(this, "查看详情", Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -210,34 +221,43 @@ public class MusicActivity extends AppCompatActivity implements TrackContract.Vi
                 sendBroadcast(intent);
                 break;
             case R.id.iv_all:
-                Toast.makeText(this, "iv_all", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "iv_all", Toast.LENGTH_SHORT).show();
                 createPopup();
                 break;
         }
     }
 
     private void createPopup(){
-        PopupWindow popupWindow = new PopupWindow(this);
+
+        final PopupWindow popupWindow = new PopupWindow(this);
         View view = LayoutInflater.from(this).inflate(R.layout.popup_music_view,null);
+        MusicListener listener = new MusicListener() {
+            @Override
+            public void showSong(int id) {
+                loadSongAndLrc(id);
+                popupWindow.dismiss();
+            }
+        };
         popupWindow.setContentView(view);
         popupWindow.setWidth(getWindowManager().getDefaultDisplay().getWidth()/2);
-        popupWindow.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
-        // 实例化一个ColorDrawable颜色为半透明
-        ColorDrawable dw = new ColorDrawable(0000000000);
-        popupWindow.setBackgroundDrawable(dw);
-        /*
-        mPopupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
-        // 设置SelectPicPopupWindow弹出窗体动画效果
-        this.setAnimationStyle(R.style.AnimationPreview);
-        */
+        popupWindow.setHeight(getWindowManager().getDefaultDisplay().getHeight()/2);
+        menuAdapter = new AllMenuAdapter(view.getContext(),songList,listener);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.all_music);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(menuAdapter);
+        LinearLayoutManager manager = new LinearLayoutManager(getBaseContext());
+        recyclerView.setLayoutManager(manager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getBaseContext(),DividerItemDecoration.VERTICAL));
+
+
+
         // 使其聚集
         popupWindow.setFocusable(true);
         // 设置允许在外点击消失
         popupWindow.setOutsideTouchable(true);
         // 这个是为了点击“返回Back”也能使其消失，并且并不会影响你的背景
         popupWindow.setBackgroundDrawable(new BitmapDrawable());
-
-        popupWindow.showAsDropDown(ivAll);
+        popupWindow.showAtLocation(ivAll,Gravity.END|Gravity.BOTTOM,0,100);
     }
     private void getPlayType() {
 

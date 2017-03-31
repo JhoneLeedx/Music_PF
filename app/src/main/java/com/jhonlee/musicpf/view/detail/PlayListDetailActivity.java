@@ -2,6 +2,8 @@ package com.jhonlee.musicpf.view.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -20,6 +22,7 @@ import com.jhonlee.musicpf.listener.MusicListener;
 import com.jhonlee.musicpf.mvp.contract.SongContract;
 import com.jhonlee.musicpf.mvp.presenter.SongPrestenter;
 import com.jhonlee.musicpf.pojo.Song;
+import com.jhonlee.musicpf.pojo.SongDetail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +54,7 @@ public class PlayListDetailActivity extends AppCompatActivity implements SongCon
     private String mName;
 
     private ArrayList<Integer> integerList = new ArrayList<>();
+    private ArrayList<SongDetail> songDetails = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,7 +100,14 @@ public class PlayListDetailActivity extends AppCompatActivity implements SongCon
         adapter.notifyDataSetChanged();
         integerList.clear();
         for (Song.TracksBean bean : list){
+            SongDetail songDetail = new SongDetail(Parcel.obtain());
+            songDetail.setAuthor(bean.getArtists().get(0).getName());
+            songDetail.setmId(bean.getId());
+            songDetail.setmName(bean.getName());
+            songDetail.setTime(bean.getDuration());
+
             integerList.add(bean.getId());
+            songDetails.add(songDetail);
         }
     }
 
@@ -121,6 +132,9 @@ public class PlayListDetailActivity extends AppCompatActivity implements SongCon
         intent.putExtra("id",id);
         if (integerList.size()>0){
             intent.putIntegerArrayListExtra("integerList",integerList);
+        }
+        if (songDetails.size()>0){
+            intent.putParcelableArrayListExtra("songList",  songDetails);
         }
         startActivity(intent);
     }

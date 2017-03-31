@@ -2,6 +2,8 @@ package com.jhonlee.musicpf.view.rank;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,6 +21,8 @@ import com.jhonlee.musicpf.listener.MusicListener;
 import com.jhonlee.musicpf.mvp.contract.RankContract;
 import com.jhonlee.musicpf.mvp.presenter.RankPresenter;
 import com.jhonlee.musicpf.pojo.Rank;
+import com.jhonlee.musicpf.pojo.Song;
+import com.jhonlee.musicpf.pojo.SongDetail;
 import com.jhonlee.musicpf.view.detail.MusicActivity;
 
 import java.util.ArrayList;
@@ -46,6 +50,7 @@ public class TypeFragment extends Fragment implements RankContract.View,MusicLis
     private RankRecyclerAdapter adapter;
     private List<Rank.SongsBean> mList;
 
+    private ArrayList<SongDetail> songDetails = new ArrayList<>();
     private ArrayList<Integer> integerList = new ArrayList<>();
     @Nullable
     @Override
@@ -100,6 +105,13 @@ public class TypeFragment extends Fragment implements RankContract.View,MusicLis
         integerList.clear();
         for (Rank.SongsBean bean : list){
             integerList.add(bean.getId());
+
+            SongDetail songDetail = new SongDetail(Parcel.obtain());
+            songDetail.setAuthor(bean.getArtists().get(0).getName());
+            songDetail.setmId(bean.getId());
+            songDetail.setmName(bean.getName());
+            songDetail.setTime(bean.getDuration());
+            songDetails.add(songDetail);
         }
     }
 
@@ -124,6 +136,9 @@ public class TypeFragment extends Fragment implements RankContract.View,MusicLis
         intent.putExtra("id",id);
         if (integerList.size()>0){
             intent.putIntegerArrayListExtra("integerList",integerList);
+        }
+        if (songDetails.size()>0){
+            intent.putParcelableArrayListExtra("songList", songDetails);
         }
         startActivity(intent);
     }
