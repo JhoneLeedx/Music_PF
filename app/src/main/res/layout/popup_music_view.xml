@@ -4,6 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="全部歌单"
+        android:padding="5dp"
+        android:gravity="center"
+        android:textColor="@android:color/white"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/all_music"
         android:layout_width="match_parent"

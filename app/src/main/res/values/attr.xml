@@ -8,4 +8,9 @@
         <attr name="currentTextColor" format="reference|color" />
         <attr name="animationDuration" format="integer" />
     </declare-styleable>
+    
+    <declare-styleable name="CircleImageView">
+        <attr name="outColor" format="reference|color"/>
+        <attr name="outWidth" format="dimension"/>
+    </declare-styleable>
 </resources>

@@ -33,8 +33,6 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.content_main)
     RelativeLayout contentMain;
-    @BindView(R.id.imageView)
-    ImageView imageView;
     @BindView(R.id.author)
     TextView author;
     @BindView(R.id.drawer_layout)
@@ -67,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.setDrawerListener(toggle);
         toggle.syncState();
-
-        Glide.with(this).load(R.drawable.news).bitmapTransform(new CropCircleTransformation(this)).into(imageView);
         author.setText("Jhon Lee");
 
         yueKuFragment = new YueKuFragment();

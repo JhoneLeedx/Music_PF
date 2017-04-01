@@ -1,30 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="120dp"
     android:background="#150f11"
     android:gravity="center_vertical">
-    <LinearLayout
+
+    <com.jhonlee.musicpf.wedget.CircleImageView
+        android:id="@+id/circleImageView"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:gravity="center"
-        android:background="@drawable/circle_img_bg"
-        android:layout_marginLeft="20dp">
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:src="@drawable/news"
-            android:scaleType="centerInside"/>
-    </LinearLayout>
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/news" />
+
     <TextView
         android:id="@+id/author"
-        android:layout_marginLeft="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
         android:padding="10dp"
-        android:textSize="18sp"
         android:text="JhonLee"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        tools:ignore="HardcodedText" />
 
 </LinearLayout>
