@@ -10,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 
 import com.jhonlee.musicpf.R;
 
