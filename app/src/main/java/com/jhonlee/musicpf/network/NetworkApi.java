@@ -25,18 +25,12 @@ public class NetworkApi {
 
     private static NetworkApi networkApi = null;
 
-    private Retrofit retorfit;
+    private Retrofit retrofit;
 
-    private IMusicRequest imusic;
 
-    public IMusicRequest getImusic() {
-        return imusic;
-    }
 
     private NetworkApi() {
-        retorfit = getRetrofit(Const.URL);
-
-        imusic = retorfit.create(IMusicRequest.class);
+        retrofit = getRetrofit(Const.URL);
     }
     public synchronized static  NetworkApi getNetworkApi() {
 
@@ -86,5 +80,14 @@ public class NetworkApi {
                     }
                 }).build();
         return okhttpCleient;
+    }
+    /**
+     * 创建请求接口的对象
+     * @param service
+     * @param <T>
+     * @return
+     */
+    public <T> T create(final Class<T> service) {
+        return retrofit.create(service);
     }
 }

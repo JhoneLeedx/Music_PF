@@ -3,6 +3,7 @@ package com.jhonlee.musicpf.mvp.presenter;
 import com.jhonlee.musicpf.mvp.contract.LyricContract;
 import com.jhonlee.musicpf.mvp.contract.TrackContract;
 import com.jhonlee.musicpf.network.NetworkApi;
+import com.jhonlee.musicpf.network.api.IMusicRequest;
 import com.jhonlee.musicpf.pojo.Lyric;
 import com.jhonlee.musicpf.pojo.LyricToken;
 import com.jhonlee.musicpf.pojo.TrackToken;
@@ -31,7 +32,7 @@ public class LyricPrestenter implements LyricContract.Presenter {
 
     @Override
     public void loadLyric(int id) {
-        Observable<LyricToken> observable = NetworkApi.getNetworkApi().getImusic().getSongLyric(id,-1,-1,-1);
+        Observable<LyricToken> observable = NetworkApi.getNetworkApi().create(IMusicRequest.class).getSongLyric(id,-1,-1,-1);
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<LyricToken>() {

@@ -3,6 +3,7 @@ package com.jhonlee.musicpf.mvp.presenter;
 import com.google.gson.Gson;
 import com.jhonlee.musicpf.mvp.contract.PlayListContract;
 import com.jhonlee.musicpf.network.NetworkApi;
+import com.jhonlee.musicpf.network.api.IMusicRequest;
 import com.jhonlee.musicpf.pojo.PlayList;
 import com.jhonlee.musicpf.pojo.Token;
 
@@ -21,7 +22,7 @@ public class PlayListPrestenter implements PlayListContract.Presenter {
 
     @Override
     public void loadPlayLists(String search, int type,int limit) {
-        Observable<Token> observable = NetworkApi.getNetworkApi().getImusic().getPlayLists(search,type,limit);
+        Observable<Token> observable = NetworkApi.getNetworkApi().create(IMusicRequest.class).getPlayLists(search,type,limit);
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Token>() {

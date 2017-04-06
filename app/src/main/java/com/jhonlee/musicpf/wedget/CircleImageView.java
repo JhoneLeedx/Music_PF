@@ -68,7 +68,7 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
             //测量的模式，精确
             result = size;
         } else {
-            result = width;
+            result = 60;
         }
         return result;
     }
