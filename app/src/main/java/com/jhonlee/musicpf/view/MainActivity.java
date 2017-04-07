@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.jhonlee.musicpf.R;
 import com.jhonlee.musicpf.view.mine.MineFragment;
 import com.jhonlee.musicpf.view.rank.RankActivity;
+import com.jhonlee.musicpf.view.station.StationActivity;
 import com.jhonlee.musicpf.view.yueku.YueKuFragment;
 
 import butterknife.BindView;
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.rb_gd:
                 break;
             case R.id.rb_dt:
+                startActivity(new Intent(this, StationActivity.class));
                 break;
             case R.id.rb_ph:
                 startActivity(new Intent(this, RankActivity.class));
