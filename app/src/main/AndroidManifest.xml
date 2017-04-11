@@ -26,6 +26,7 @@
         <activity android:name=".view.rank.RankActivity"/>
         <activity android:name=".view.detail.MusicActivity" />
         <activity android:name=".view.station.StationActivity" />
+        <activity android:name=".view.playlist.PlayListActivity" />
 
         <service android:name=".service.MusicService" />
     </application>

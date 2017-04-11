@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.jhonlee.musicpf.R;
 import com.jhonlee.musicpf.view.mine.MineFragment;
+import com.jhonlee.musicpf.view.playlist.PlayListActivity;
 import com.jhonlee.musicpf.view.rank.RankActivity;
 import com.jhonlee.musicpf.view.station.StationActivity;
 import com.jhonlee.musicpf.view.yueku.YueKuFragment;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.rb_tj:
                 break;
             case R.id.rb_gd:
+                startActivity(new Intent(this, PlayListActivity.class));
                 break;
             case R.id.rb_dt:
                 startActivity(new Intent(this, StationActivity.class));
